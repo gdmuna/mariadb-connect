@@ -1,0 +1,57 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: mariadb-connect
+
+    steps:
+      - name: Get Version Name
+        id: version
+        run: echo "value=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Docker Meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+            type=semver,pattern={{major}}
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            MARIADB_VERSION=${{ steps.version.outputs.value }}
+          tags: ${{ steps.meta.outputs.tags }}
+      
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          repository: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          short-description: ${{ github.event.repository.description }}
+      
+      - name: Push Summary
+        run: echo "### Build MariaDB ${{ steps.version.outputs.value }} Successfully :rocket:" >> $GITHUB_STEP_SUMMARY
