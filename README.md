@@ -6,8 +6,7 @@ MariaDB DataBase with Connect Engine.
 
 ### Supported tags
 
-- `11.3.2`, `11`, `latest`  
-- `11.2.4`  
+- `11.2.4`, `11`, `latest`  
 - `10.11.8`, `10`
 
 ### How to use this image
