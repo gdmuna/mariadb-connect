@@ -29,7 +29,7 @@ RUN apt-get update \
     && mkdir -p /downloads/wrapper \
     && cp -a mariadb-${MARIADB_VERSION}-linux-systemd-x86_64/share/JavaWrappers.jar /downloads/wrapper/ \
     && cp -a mariadb-${MARIADB_VERSION}-linux-systemd-x86_64/share/JdbcInterface.jar /downloads/wrapper/ \
-    && wget https://download.oracle.com/otn-pub/otn_software/jdbc/234/ojdbc11.jar \
+    && wget https://download.oracle.com/otn-pub/otn_software/jdbc/238/ojdbc11.jar \
     && mkdir -p /downloads/jdbc \
     && mv ojdbc11.jar /downloads/jdbc/
 
